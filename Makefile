@@ -1,5 +1,7 @@
 DOCKER_IMAGE_NAME = jq-builder
 SUCCESS_STRING=\x1b[32;01mSUCCESS\x1b[0m
+JQ_VERSION=1.7.1
+GIT_TAG=jq-$(JQ_VERSION)
 
 compile: docker_build wasm
 
@@ -18,20 +20,8 @@ wasm:
 	@echo "============================================="
 	mkdir -p "dist"
 	docker run --platform linux/amd64  --rm -it -v $(PWD):/app $(DOCKER_IMAGE_NAME) /bin/bash -c " \
-		mkdir -p /app/dist; \
-		emcc -O3 \
-			--llvm-lto 3 \
-			--llvm-opts 3 \
-			-s ALLOW_MEMORY_GROWTH=1 \
-			-s ERROR_ON_UNDEFINED_SYMBOLS=0 \
-			-s MALLOC=dlmalloc \
-			-s MODULARIZE_INSTANCE=1 \
-			-s EXPORT_NAME=\"jq\" \
-			-s WASM=1 \
-			--minify 0 \
-			-s --pre-js /app/src/pre.js \
-			-s --post-js /app/src/post.js \
-			/opt/jq.o -o /app/dist/jq.js \
+		cp /src/jq/jq /app/dist/jq.js; \
+		cp /src/jq/jq.wasm /app/dist/jq.wasm; \
 	"
 	@echo "============================================="
 	@echo "Docker images has been built ...... $(SUCCESS_STRING)"
