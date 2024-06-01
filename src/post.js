@@ -1,1 +1,1 @@
-console.log(this) // { post: 'post' }
+console.log('this is post.js');
