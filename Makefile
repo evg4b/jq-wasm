@@ -1,7 +1,6 @@
 SUCCESS_STRING=\x1b[32;01mSUCCESS\x1b[0m
 BUILDER_IMAGE_NAME = jq-wasm-builder
 
-
 compile: fetch_submodules build_docker_image build_jq copy_files
 
 fetch_submodules:
@@ -35,19 +34,20 @@ build_jq:
 	  		--enable-static \
 	  		--enable-all-static; \
 		make clean; \
-		emmake make LDFLAGS=-all-static CCFLAGS="-O3 -j8" EMCC_CFLAGS="-s NO_DYNAMIC_EXECUTION=1 \
-                                                                               	-s MODULARIZE=1 \
-                                                                               	-s ALLOW_MEMORY_GROWTH=1 \
-                                                                               	-s MEMORY_GROWTH_GEOMETRIC_STEP=0.5 \
-                                                                               	-s WASM=1 \
-                                                                               	-s USE_PTHREADS=0 \
-                                                                               	-s INVOKE_RUN=0 \
-                                                                               	-s EXIT_RUNTIME=1 \
-                                                                               	-O3 \
-                                                                               	-g1 \
-                                                                               	-Wno-unused-command-line-argument \
-                                                                               	--pre-js /app/pre.js \
-                                                                               	--post-js /app/post.js" \
+		emmake make LDFLAGS=-all-static \
+					CCFLAGS="-O3 -j8" \
+					EMCC_CFLAGS="-s NO_DYNAMIC_EXECUTION=1 \
+						-s MODULARIZE=1 \
+						-s ALLOW_MEMORY_GROWTH=1 \
+						-s MEMORY_GROWTH_GEOMETRIC_STEP=0.5 \
+						-s WASM=1 \
+						-s USE_PTHREADS=0 \
+						-s INVOKE_RUN=0 \
+						-s EXIT_RUNTIME=1 \
+						-O3 \
+						-g1 \
+						-Wno-unused-command-line-argument \
+						--pre-js /app/_pre.js" \
 	'
 	@echo "============================================="
 	@echo "Building jq wasm version ...... $(SUCCESS_STRING)"
