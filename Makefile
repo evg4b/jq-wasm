@@ -57,8 +57,9 @@ copy_files:
 	@echo "============================================="
 	@echo "Copying files"
 	@echo "============================================="
-	cp jq/jq dist/jq.js
-	cp jq/jq.wasm dist/jq.wasm
+	mkdir -p libs/jq
+	cp jq/jq libs/jq/jq.js
+	cp jq/jq.wasm libs/jq/jq.wasm
 	@echo "============================================="
 	@echo "Files has been copied ...... $(SUCCESS_STRING)"
 	@echo "============================================="
