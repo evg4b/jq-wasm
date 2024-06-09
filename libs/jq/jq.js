@@ -45,95 +45,99 @@ function _create_class(Constructor, protoProps, staticProps) {
   return Constructor;
 }
 
-var IO = function() {
-  "use strict";
-  function IO() {
-    _class_call_check(this, IO);
-  }
-  _create_class(IO, [ {
-    key: "loadStdin",
-    value: function loadStdin(text) {
-      this.stdinBuffer = this.encoder.encode(text);
-      this.stdinCursor = 0;
+  class IO {
+    stdinBuffer = [];
+    stdoutBuffer = [];
+    stderrBuffer = [];
+
+    encoder = new TextEncoder()
+    decoder = new TextDecoder()
+
+    stdinCursor = 0;
+
+    constructor() {
+      this.stdin = this.stdin.bind(this)
+      this.stdout = this.stdout.bind(this)
+      this.stderr = this.stderr.bind(this)
     }
-  }, {
-    key: "stdin",
-    value: function stdin() {
+
+    loadStdin(text) {
+      this.stdinBuffer = this.encoder.encode(text)
+      this.stdinCursor = 0
+    }
+
+    stdin() {
       if (this.stdinCursor < this.stdinBuffer.length) {
         return this.stdinBuffer[this.stdinCursor++];
       }
-      return null;
+
+      return null
     }
-  }, {
-    key: "stdout",
-    value: function stdout(char) {
+
+    stdout(char) {
       if (char) {
-        this.stdoutBuffer.push(char);
+        this.stdoutBuffer.push(char)
       }
     }
-  }, {
-    key: "loadStdout",
-    value: function loadStdout() {
+
+    loadStdout() {
       return this._load(this.stdoutBuffer);
     }
-  }, {
-    key: "stderr",
-    value: function stderr(char) {
+
+    stderr(char) {
       if (char) {
-        this.stderrBuffer.push(char);
+        this.stderrBuffer.push(char)
       }
     }
-  }, {
-    key: "loadStderr",
-    value: function loadStderr() {
+
+    loadStderr() {
       return this._load(this.stderrBuffer);
     }
-  }, {
-    key: "flush",
-    value: function flush() {
+
+    flush() {
       this.stdinBuffer = [];
       this.stdoutBuffer = [];
       this.stderrBuffer = [];
       this.stdinCursor = 0;
     }
-  }, {
-    key: "_load",
-    value: function _load(buffer) {
-      return this.decoder.decode(new Uint8Array(buffer)).trim();
+
+    _load(buffer) {
+      return this.decoder.decode(new Uint8Array(buffer))
+        .trim();
     }
-  } ]);
-  return IO;
-}();
-
-var io = new IO;
-
-Object.assign(Module, {
-  noInitialRun: true,
-  noExitRuntime: true,
-  io: io,
-  preRun: function() {
-    FS.init(io.stdin, io.stdout, io.stderr);
-  },
-  exec: function exec(input, filter) {
-    return new Promise(function(resolve, reject) {
-      try {
-        io.loadStdin(input);
-        callMain([ filter ]);
-        if (EXITSTATUS) {
-          reject(new Error(io.loadStderr()));
-        } else {
-          resolve(io.loadStdout());
-        }
-      } catch (error) {
-        reject(error);
-      } finally {
-        io.flush();
-      }
-    });
   }
-});
 
-var moduleOverrides = Object.assign({}, Module);
+  const io = new IO();
+
+  Object.assign(Module, {
+    noInitialRun: true,
+    noExitRuntime: true,
+    io: io,
+    preRun: () => {
+      FS.init(io.stdin, io.stdout, io.stderr);
+    },
+    exec(input, filter) {
+      return new Promise((resolve, reject) => {
+        try {
+          io.loadStdin(input);
+          callMain([filter]);
+          if (EXITSTATUS) {
+            reject(new Error(io.loadStderr()))
+          } else {
+            resolve(io.loadStdout())
+          }
+        } catch (error) {
+          reject(error);
+        } finally {
+          io.flush();
+        }
+      });
+    }
+  });
+
+
+
+  var moduleOverrides = Object.assign({}, Module);
 
 var arguments_ = [];
 
@@ -2788,26 +2792,26 @@ var SYSCALLS = {
     HEAP32[(((buf) + (12)) >> 2)] = stat.uid;
     HEAP32[(((buf) + (16)) >> 2)] = stat.gid;
     HEAP32[(((buf) + (20)) >> 2)] = stat.rdev;
-    (tempI64 = [ stat.size >>> 0, (tempDouble = stat.size, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ], 
+    (tempI64 = [ stat.size >>> 0, (tempDouble = stat.size, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ],
     HEAP32[(((buf) + (24)) >> 2)] = tempI64[0], HEAP32[(((buf) + (28)) >> 2)] = tempI64[1]);
     HEAP32[(((buf) + (32)) >> 2)] = 4096;
     HEAP32[(((buf) + (36)) >> 2)] = stat.blocks;
     var atime = stat.atime.getTime();
     var mtime = stat.mtime.getTime();
     var ctime = stat.ctime.getTime();
-    (tempI64 = [ Math.floor(atime / 1e3) >>> 0, (tempDouble = Math.floor(atime / 1e3), 
-    (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ], 
+    (tempI64 = [ Math.floor(atime / 1e3) >>> 0, (tempDouble = Math.floor(atime / 1e3),
+    (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ],
     HEAP32[(((buf) + (40)) >> 2)] = tempI64[0], HEAP32[(((buf) + (44)) >> 2)] = tempI64[1]);
     HEAPU32[(((buf) + (48)) >> 2)] = (atime % 1e3) * 1e3;
-    (tempI64 = [ Math.floor(mtime / 1e3) >>> 0, (tempDouble = Math.floor(mtime / 1e3), 
-    (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ], 
+    (tempI64 = [ Math.floor(mtime / 1e3) >>> 0, (tempDouble = Math.floor(mtime / 1e3),
+    (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ],
     HEAP32[(((buf) + (56)) >> 2)] = tempI64[0], HEAP32[(((buf) + (60)) >> 2)] = tempI64[1]);
     HEAPU32[(((buf) + (64)) >> 2)] = (mtime % 1e3) * 1e3;
-    (tempI64 = [ Math.floor(ctime / 1e3) >>> 0, (tempDouble = Math.floor(ctime / 1e3), 
-    (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ], 
+    (tempI64 = [ Math.floor(ctime / 1e3) >>> 0, (tempDouble = Math.floor(ctime / 1e3),
+    (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ],
     HEAP32[(((buf) + (72)) >> 2)] = tempI64[0], HEAP32[(((buf) + (76)) >> 2)] = tempI64[1]);
     HEAPU32[(((buf) + (80)) >> 2)] = (ctime % 1e3) * 1e3;
-    (tempI64 = [ stat.ino >>> 0, (tempDouble = stat.ino, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ], 
+    (tempI64 = [ stat.ino >>> 0, (tempDouble = stat.ino, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ],
     HEAP32[(((buf) + (88)) >> 2)] = tempI64[0], HEAP32[(((buf) + (92)) >> 2)] = tempI64[1]);
     return 0;
   },
@@ -3163,7 +3167,7 @@ var __timegm_js = function(tmPtr) {
     HEAP32[(((tmPtr) + (28)) >> 2)] = yday;
     return date.getTime() / 1e3;
   })();
-  return (setTempRet0((tempDouble = ret, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0)), 
+  return (setTempRet0((tempDouble = ret, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0)),
   ret >>> 0);
 };
 
@@ -3325,9 +3329,9 @@ function _fd_fdstat_get(fd, pbuf) {
     }
     HEAP8[pbuf] = type;
     HEAP16[(((pbuf) + (2)) >> 1)] = flags;
-    (tempI64 = [ rightsBase >>> 0, (tempDouble = rightsBase, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ], 
+    (tempI64 = [ rightsBase >>> 0, (tempDouble = rightsBase, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ],
     HEAP32[(((pbuf) + (8)) >> 2)] = tempI64[0], HEAP32[(((pbuf) + (12)) >> 2)] = tempI64[1]);
-    (tempI64 = [ rightsInheriting >>> 0, (tempDouble = rightsInheriting, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ], 
+    (tempI64 = [ rightsInheriting >>> 0, (tempDouble = rightsInheriting, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ],
     HEAP32[(((pbuf) + (16)) >> 2)] = tempI64[0], HEAP32[(((pbuf) + (20)) >> 2)] = tempI64[1]);
     return 0;
   } catch (e) {
@@ -3371,7 +3375,7 @@ function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
     if (isNaN(offset)) return 61;
     var stream = SYSCALLS.getStreamFromFD(fd);
     FS.llseek(stream, offset, whence);
-    (tempI64 = [ stream.position >>> 0, (tempDouble = stream.position, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ], 
+    (tempI64 = [ stream.position >>> 0, (tempDouble = stream.position, (+(Math.abs(tempDouble))) >= 1 ? (tempDouble > 0 ? (+(Math.floor((tempDouble) / 4294967296))) >>> 0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble))) >>> 0)) / 4294967296))))) >>> 0) : 0) ],
     HEAP32[((newOffset) >> 2)] = tempI64[0], HEAP32[(((newOffset) + (4)) >> 2)] = tempI64[1]);
     if (stream.getdents && offset === 0 && whence === 0) stream.getdents = null;
     return 0;
