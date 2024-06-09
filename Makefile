@@ -43,6 +43,7 @@ build_jq:
 						-s WASM=1 \
 						-s USE_PTHREADS=0 \
 						-s INVOKE_RUN=0 \
+						-s ASSERTIONS=1 \
 						-s EXIT_RUNTIME=1 \
 						-O3 \
 						-g1 \
